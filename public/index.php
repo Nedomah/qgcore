@@ -26,7 +26,7 @@ $data = json_encode($stmt->fetchAll());
   <input type="hidden" id="table-data" value="<?= htmlspecialchars($data, ENT_QUOTES) ?>">
 
   <!-- passing parameters -->
-  <div style="margin-bottom: 15px; padding: 10px; background:#f8f9fa; border:1px solid #ddd;">
+  <div style="margin-bottom: 5px; padding: 0.25em; background:#f8f9fa; border:1px solid #ddd;">
     <label>Start Date:</label>
     <input type="date" id="startDate">
   
@@ -46,7 +46,8 @@ $data = json_encode($stmt->fetchAll());
   
     <button id="loadTable">Load / Refresh</button>
   </div>
-  <div id="Connections" style="border: 1px solid black; padding: 0.25em;"></div>
+
+  <div id="Connections" style="border: 1px solid #ddd; padding: 0.25em;"></div>
 
   <!-- Local JS (use tabulator.min.js for full features) -->
   <script src="../lib/js/tabulator.js"></script>
