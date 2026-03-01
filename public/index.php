@@ -1,16 +1,21 @@
 <?php
 
-require __DIR__ . '/../connections/conman.php';
 require __DIR__ . '/../devtools/tools.php';
+require __DIR__ . '/../data/core.php';
 
-$pdo = ConMan::get();
+$view = [];
+if (isset($_GET['dc']))
+{
+    $view = Core::GetObjectByDC($_GET['dc']);
+}
+else
+{
+    $view = Core::GetObjectById($_GET['object']);
+}
 
-// Plain query
-$stmt = $pdo->prepare('SELECT * FROM Connections');
-$stmt->execute();
-$data = json_encode($stmt->fetchAll());
 
-//echo $data
+
+VAR_DUMP($view);
 
 ?>
 
@@ -23,28 +28,11 @@ $data = json_encode($stmt->fetchAll());
   <link href="../lib/css/tabulator_simple.css" rel="stylesheet">
 </head>
 <body>
-  <input type="hidden" id="table-data" value="<?= htmlspecialchars($data, ENT_QUOTES) ?>">
-
-  <!-- passing parameters -->
-  <div style="margin-bottom: 5px; padding: 0.25em; background:#f8f9fa; border:1px solid #ddd;">
-    <label>Start Date:</label>
-    <input type="date" id="startDate">
-  
-    <label>End Date:</label>
-    <input type="date" id="endDate">
-  
-    <label>Status:</label>
-    <select id="status">
-      <option value="">All</option>
-      <option value="active">Active</option>
-      <option value="pending">Pending</option>
-      <option value="cancelled">Cancelled</option>
-    </select>
-  
-    <label>Search name:</label>
-    <input type="text" id="searchName" placeholder="e.g. John">
-  
-    <button id="loadTable">Load / Refresh</button>
+   <!-- passing parameters -->
+  <div style="border-left: 1px solid #ddd; border-right: 1px solid #ddd; border-top: 1px solid #ddd; padding: 0.25em; background:#f8f9fa;">
+    <button id="refresh_table" style="margin-right: 0.5em;">Refresh</button>
+    <label for="view">Active:</label>
+    <input type="checkbox" id="active">
   </div>
 
   <div id="Connections" style="border: 1px solid #ddd; padding: 0.25em;"></div>
@@ -57,21 +45,66 @@ $data = json_encode($stmt->fetchAll());
   <!-- <script>Tabulator.registerModule(EditModule);</script> -->
 
   <script>
-    // this is now automated as long as the query returns the columns expected
-    var tabledata = JSON.parse(document.getElementById('table-data').value);
-    
+  
     // This needs to be generated based on the view conviguration in qg_core
     var table = new Tabulator("#Connections", {
-      height: "450px",  // Optional: Set a height to enable scrolling
-      data: tabledata,
-      layout: "fitColumns",  // Optional: Auto-fit columns
+    //   height: "450px",  // Optional: Set a height to enable scrolling
+    //   data: tabledata,
+    //   layout: "fitColumns",  // Optional: Auto-fit columns
+        height: "500px",
+        layout: "fitColumns",
+        ajaxURL: "../data/fetchdata.php",
+        ajaxConfig: "GET",
+        ajaxFiltering: true,           // optional – if you later want header filters too
+        ajaxLoading: true,             // shows loading overlay
+        ajaxLoadingError: "Failed to load connections!",
+
+        // This function is called **every time** Tabulator makes an AJAX request
+        ajaxParams: function() {
+        const checkbox = document.getElementById("active");
+        const in_active = checkbox?.checked ? 1 : 0; 
+
+        return {
+          in_active: in_active
+        };
+      },
+
       columns: [
-        {title: "Id", field: "Id"},
-        {title: "Name", field: "Name"},
-        {title: "Type", field: "Type"},
-        {title: "Is Active", field: "IsActive"}
+        {title: "id", field: "id"},
+        {title: "Name", field: "name"},
+        {title: "type", field: "type"},
+        {title: "active", field: "active", hozAlign: "center", formatter: "toggle",
+        formatterParams: {
+            size: 18,              // pixel size of switch
+            onValue: true,         // value when "on"
+            offValue: false,
+            onTruthy: true,        // treat any truthy value as on
+            onColor: "#59b0d8",    // green when on
+            offColor: "#696969",   // red when off
+            clickable: false,       // ← crucial: clicking cell toggles value
+        }},
+        {title: "host", field: "host"},
+        {title: "port", field: "port"},
+        {title: "database", field: "database"},
+        {title: "username", field: "username"}        
       ]
     });
+
+    // Initial load (very reliable pattern)
+    table.on("tableBuilt", function(){
+        table.setData();  // now safe — runs after full init
+    });
+
+    // Refresh button – just triggers reload with current params
+    document.getElementById("refresh_table").addEventListener("click", function() {
+      table.setData();   // ← cleanest way – re-uses ajaxParams function
+    });
+
+    // // Optional: auto-refresh when checkbox changes (very user-friendly)
+    // document.getElementById("active").addEventListener("change", function() {
+    //   table.setData();   // reload with new in_active value
+    // });
+
   </script>
 
 </body>
