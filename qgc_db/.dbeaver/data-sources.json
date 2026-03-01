@@ -1,0 +1,42 @@
+{
+	"folders": {},
+	"connections": {
+		"mariaDB-19ca8f23d60-5bdd49c6f1623c0": {
+			"provider": "mysql",
+			"driver": "mariaDB",
+			"name": "192.168.50.5",
+			"save-password": true,
+			"configuration": {
+				"host": "192.168.50.5",
+				"port": "3306",
+				"url": "jdbc:mariadb://192.168.50.5:3306/",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-show-all-dbs@": "true"
+				},
+				"auth-model": "native"
+			},
+			"custom-properties": {
+				"database.editor.separate.connection": "ALWAYS"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"smart-commit": false,
+			"smart-commit-recover": true,
+			"auto-close-transactions": true,
+			"close-transactions-period": 1800,
+			"auto-close-connections": true,
+			"close-connections-period": 14400
+		}
+	}
+}

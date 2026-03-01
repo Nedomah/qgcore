@@ -1,1 +1,4 @@
 .env
+qcg_dev/.dbeaver/
+qcg_dev/.dbeaver/*
+qcg_dev/.project
