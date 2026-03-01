@@ -5,7 +5,7 @@ loadEnv(__DIR__ . '/../.env');
 /*
  * ConMan - MySQL Connection Manager with persistent connection pooling
  */
-#comment
+
 class ConMan
 {   
     private static $pdo = null;
