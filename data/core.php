@@ -56,12 +56,12 @@ class Core
     }
 
     // provide type information depending on object type
-    private static function GetObjectTypeInfo(array $objectInfo)
+    private static function GetObjectTypeInfo()
     {       
         
-        self::$objectTypeId = $objectInfo[0]["objecttypeid"];
-        self::$coreObject = $objectInfo[0]["core"];
-        self::$objectId = $objectInfo[0]["id"];
+        self::$objectTypeId = self::$objectInfo[0]["objecttypeid"];
+        self::$coreObject = self::$objectInfo[0]["core"];
+        self::$objectId = self::$objectInfo[0]["id"];
         
 
         if (self::$objectTypeId === 1) //view
@@ -102,13 +102,13 @@ class Core
     }
 
     // gets connection ifnormation if available for the object type and object id not a core object
-    private static function GetObjectConnectionInfo(array $objectTypeInfo)
+    private static function GetObjectConnectionInfo()
     {
         $validTypes = [1, 2]; // only views, functions for now (need to expand for lists, validationss, calculations, locks, visibles)
 
         if (in_array(self::$objectTypeId, $validTypes, true) && self::$coreObject === 0)
         {
-            $connectionId = $objectTypeInfo[0]["connectionid"];
+            $connectionId = self::$objectTypeInfo[0]["connectionid"];
 
             $stmt = self::$pdoCore->prepare("SELECT id, `name`, `type`, active, host, port, `database`, username, `password` FROM connections WHERE id = :connectionId");
             $stmt->bindValue(':connectionId', $connectionId, PDO::PARAM_STR);
@@ -120,7 +120,9 @@ class Core
         }
     }
 
-    
+
+
+
 
 
 }
